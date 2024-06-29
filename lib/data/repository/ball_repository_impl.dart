@@ -9,11 +9,7 @@ class BallRepositoryImpl implements IBallRepository {
 
   @override
   Future<PredictionModel> getPredictionText() async {
-    try {
-      final response = await dio.get('https://eightballapi.com/api');
-      return PredictionModel.fromJson(response.data);
-    } on Exception catch (e) {
-      throw Exception(e);
-    }
+    final response = await dio.get('https://eightballapi.com/api');
+    return PredictionModel.fromJson(response.data);
   }
 }

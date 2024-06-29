@@ -3,45 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:magic_ball/cubit/ball_cubit.dart';
 import 'package:magic_ball/utils/colors.dart';
 import 'package:magic_ball/utils/images.dart';
-import 'package:shake/shake.dart';
 
-class BallInitWidget extends StatefulWidget {
-  const BallInitWidget({super.key});
+class BallInitWidget extends StatelessWidget {
+  final AnimationController controller;
 
-  @override
-  State<BallInitWidget> createState() => _BallInitWidgetState();
-}
-
-class _BallInitWidgetState extends State<BallInitWidget>
-    with TickerProviderStateMixin {
-  late final Animation<double> _animation;
-  late final AnimationController _controller;
-  late ShakeDetector _detector;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    )..forward();
-    _animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
-    );
-    _detector = ShakeDetector.waitForStart(onPhoneShake: () {
-      context.read<BallCubit>().getPredictionText();
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  const BallInitWidget({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
+    final animation = CurvedAnimation(
+      parent: controller,
+      curve: Curves.easeInOut,
+    );
+
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -57,20 +31,20 @@ class _BallInitWidgetState extends State<BallInitWidget>
         alignment: Alignment.bottomCenter,
         children: [
           Positioned.fill(
-            child: FadeTransition(
-              opacity: _animation,
+            child: ScaleTransition(
+              scale: animation,
               child: InkWell(
                 child: Image.asset(
                   Images.backgroundImage,
                   fit: BoxFit.fitWidth,
                 ),
                 onTap: () async {
-                  _controller.addStatusListener((status) async {
+                  controller.addStatusListener((status) async {
                     if (status == AnimationStatus.dismissed) {
                       context.read<BallCubit>().getPredictionText();
                     }
                   });
-                  _controller.reverse();
+                  controller.reverse();
                 },
               ),
             ),
