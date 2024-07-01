@@ -23,4 +23,8 @@ class BallCubit extends Cubit<BallState> {
       ));
     }
   }
+
+  void resetBall() {
+    emit(BallInitial());
+  }
 }
